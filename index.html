@@ -22,30 +22,38 @@
             font-size: 24px;
             margin-bottom: 20px;
         }
-        input, button {
+        input {
             font-size: 16px;
             padding: 10px;
-            margin: 10px;
+            margin: 10px 5px 10px 0;
             border-radius: 8px;
             border: 1px solid #d1d1d6;
-        }
-        input {
-            width: 200px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 200px;
         }
         button {
-            background-color: #007aff;
-            color: white;
+            font-size: 16px;
+            padding: 10px;
+            margin: 10px 5px;
+            border-radius: 8px;
+            border: none;
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+        }
+        button.add-button {
+            background-color: #007aff;
+            color: white;
         }
         button.reset-button {
             background-color: #ff3b30;
+            color: white;
         }
         .info {
-            font-size: 14px;
+            font-size: 16px;
             color: #666;
             margin-bottom: 10px;
+            font-weight: bold;
         }
         #chart {
             display: flex;
@@ -70,6 +78,9 @@
             font-size: 12px;
             color: #333;
         }
+        .bar-value {
+            font-weight: bold;
+        }
         .bar-label {
             font-weight: 600;
             margin-top: 2px;
@@ -93,7 +104,7 @@
             font-weight: bold;
         }
         .arrow {
-            font-size: 32px;
+            font-size: 48px;
             margin: 0 20px;
             align-self: center;
             color: #007aff;
@@ -104,19 +115,53 @@
             align-items: flex-end;
             width: 45%;
         }
+        .graphic {
+            width: 200px;
+            height: 200px;
+            margin-top: 20px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .graphic div {
+            position: absolute;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .graphic .total {
+            top: 30px;
+            left: 50px;
+        }
+        .graphic .avg {
+            top: 90px;
+            left: 50px;
+        }
+        .graphic .data {
+            top: 150px;
+            left: 50px;
+        }
     </style>
 </head>
 <body>
     <h1>Average Calculator</h1>
-    <input type="number" id="numberInput" placeholder="Enter a number">
-    <button onclick="addNumber()">Add Number</button>
-    <button class="reset-button" onclick="resetCalculator()">Reset</button>
+    <div style="display: flex; align-items: center;">
+        <input type="number" id="numberInput" placeholder="Enter a number">
+        <button class="add-button" onclick="addNumber()">Add Number</button>
+        <button class="reset-button" onclick="resetCalculator()">Reset</button>
+    </div>
     <div id="numbersList" class="info"></div>
     <div id="totalDisplay" class="info"></div>
     <div id="dataPointsDisplay" class="info"></div>
     <div id="averageDisplay" class="info"></div>
     <div id="averageEquation" class="info"></div>
     <div id="chart" class="chart-container"></div>
+    <div class="graphic">
+        <div class="total">Total</div>
+        <div class="avg">Avg</div>
+        <div class="data">No. of Data</div>
+    </div>
 
     <script>
         let numbers = [];
@@ -220,11 +265,21 @@
 
             const arrow = document.createElement('div');
             arrow.className = 'arrow';
-            arrow.textContent = '➔';
+            arrow.innerHTML = '&#8594;';
             chart.appendChild(arrow);
 
             chart.appendChild(orangeBars);
 
+            // Add average line
+            const averageLine = document.createElement('div');
+            averageLine.className = 'average-line';
+            const averageHeight = (average / maxNumber) * maxHeight;
+            averageLine.style.top = (maxHeight - averageHeight) + 'px';
+            const averageValue = document.createElement('div');
+            averageValue.className = 'average-value';
+            averageValue.textContent = average.toFixed(2);
+            averageLine.appendChild(averageValue);
+            chart.appendChild(averageLine);
         }
 
         function resetCalculator() {
