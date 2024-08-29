@@ -7,17 +7,19 @@
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
         input, button { font-size: 16px; padding: 5px; margin: 5px; }
-        #chart { display: flex; align-items: flex-end; height: 200px; margin-top: 20px; border-bottom: 1px solid black; }
+        #chart { display: flex; align-items: flex-end; height: 30vh; margin-top: 20px; border-bottom: 1px solid black; }
         .bar { width: 30px; margin-right: 5px; background-color: blue; position: relative; }
         .average-line { position: absolute; width: 100%; height: 2px; background-color: red; top: 0; }
         .bar-label { text-align: center; margin-top: 5px; font-size: 12px; }
         .info { margin-top: 20px; }
+        .error { color: red; }
     </style>
 </head>
 <body>
     <h1>Improved Average Calculator</h1>
     <input type="number" id="numberInput" placeholder="Enter a number">
     <button onclick="addNumber()">Add Number</button>
+    <div id="errorDisplay" class="error"></div>
     <div id="numbersList" class="info"></div>
     <div id="totalDisplay" class="info"></div>
     <div id="dataPointsDisplay" class="info"></div>
@@ -30,12 +32,18 @@
 
         function addNumber() {
             const input = document.getElementById('numberInput');
+            const errorDisplay = document.getElementById('errorDisplay');
             const number = parseFloat(input.value);
-            if (!isNaN(number)) {
-                numbers.push(number);
-                input.value = '';
-                updateDisplay();
+
+            if (isNaN(number)) {
+                errorDisplay.textContent = 'Please enter a valid number.';
+                return;
             }
+
+            errorDisplay.textContent = '';
+            numbers.push(number);
+            input.value = '';
+            updateDisplay();
         }
 
         function calculateTotal() {
@@ -47,25 +55,40 @@
             return numbers.length > 0 ? total / numbers.length : 0;
         }
 
-        function updateDisplay() {
+        function updateNumbersList() {
             const numbersList = document.getElementById('numbersList');
-            const totalDisplay = document.getElementById('totalDisplay');
-            const dataPointsDisplay = document.getElementById('dataPointsDisplay');
-            const averageDisplay = document.getElementById('averageDisplay');
-            const averageEquation = document.getElementById('averageEquation');
-            const chart = document.getElementById('chart');
-
             numbersList.textContent = 'Numbers: ' + numbers.join(', ');
+        }
+
+        function updateTotalDisplay() {
+            const totalDisplay = document.getElementById('totalDisplay');
             const total = calculateTotal();
             totalDisplay.textContent = 'Total: ' + total.toFixed(2);
+        }
+
+        function updateDataPointsDisplay() {
+            const dataPointsDisplay = document.getElementById('dataPointsDisplay');
             dataPointsDisplay.textContent = 'Number of Data Points: ' + numbers.length;
+        }
+
+        function updateAverageDisplay() {
+            const averageDisplay = document.getElementById('averageDisplay');
             const average = calculateAverage();
             averageDisplay.textContent = 'Average: ' + average.toFixed(2);
-            averageEquation.textContent = `Average = Total / Number of Data Points = ${total.toFixed(2)} / ${numbers.length} = ${average.toFixed(2)}`;
+        }
 
+        function updateAverageEquation() {
+            const averageEquation = document.getElementById('averageEquation');
+            const total = calculateTotal();
+            const average = calculateAverage();
+            averageEquation.textContent = `Average = Total / Number of Data Points = ${total.toFixed(2)} / ${numbers.length} = ${average.toFixed(2)}`;
+        }
+
+        function updateChart() {
+            const chart = document.getElementById('chart');
             chart.innerHTML = '';
-            const maxHeight = 180;
-            const maxNumber = Math.max(...numbers, average);
+            const maxHeight = 30; // vh units
+            const maxNumber = Math.max(...numbers, calculateAverage());
 
             numbers.forEach((number) => {
                 const barContainer = document.createElement('div');
@@ -74,7 +97,7 @@
                 const bar = document.createElement('div');
                 bar.className = 'bar';
                 const height = (number / maxNumber) * maxHeight;
-                bar.style.height = height + 'px';
+                bar.style.height = height + 'vh';
 
                 const label = document.createElement('div');
                 label.className = 'bar-label';
@@ -85,15 +108,22 @@
                 chart.appendChild(barContainer);
             });
 
-            // Add average line
             const averageLine = document.createElement('div');
             averageLine.className = 'average-line';
-            const averageHeight = (average / maxNumber) * maxHeight;
-            averageLine.style.top = (maxHeight - averageHeight) + 'px';
+            const averageHeight = (calculateAverage() / maxNumber) * maxHeight;
+            averageLine.style.top = (maxHeight - averageHeight) + 'vh';
             chart.appendChild(averageLine);
         }
 
-        // Add event listener for Enter key press
+        function updateDisplay() {
+            updateNumbersList();
+            updateTotalDisplay();
+            updateDataPointsDisplay();
+            updateAverageDisplay();
+            updateAverageEquation();
+            updateChart();
+        }
+
         document.getElementById('numberInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 addNumber();
