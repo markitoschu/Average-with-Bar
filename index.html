@@ -8,18 +8,23 @@
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
         input, button { font-size: 16px; padding: 5px; margin: 5px; }
         #chart { display: flex; align-items: flex-end; height: 30vh; margin-top: 20px; border-bottom: 1px solid black; position: relative; }
-        .bar { width: 30px; margin-right: 5px; background-color: blue; position: relative; }
+        .bar { width: 30px; margin-right: 5px; position: relative; }
+        .bar.blue { background-color: blue; }
+        .bar.orange { background-color: orange; }
         .average-line { position: absolute; height: 2px; background-color: red; }
         .average-value { position: absolute; right: -40px; top: -10px; font-size: 14px; color: red; }
         .bar-label { text-align: center; margin-top: 5px; font-size: 12px; }
+        .arrow { margin-left: 10px; margin-right: 10px; font-size: 24px; display: flex; align-items: center; }
         .info { margin-top: 20px; }
         .error { color: red; }
+        .reset-button { background-color: red; color: white; }
     </style>
 </head>
 <body>
     <h1>Improved Average Calculator</h1>
     <input type="number" id="numberInput" placeholder="Enter a number">
     <button onclick="addNumber()">Add Number</button>
+    <button class="reset-button" onclick="resetCalculator()">Reset</button>
     <div id="errorDisplay" class="error"></div>
     <div id="numbersList" class="info"></div>
     <div id="totalDisplay" class="info"></div>
@@ -44,6 +49,11 @@
             errorDisplay.textContent = '';
             numbers.push(number);
             input.value = '';
+            updateDisplay();
+        }
+
+        function resetCalculator() {
+            numbers = [];
             updateDisplay();
         }
 
@@ -91,36 +101,47 @@
             const maxHeight = 30; // vh units
             const maxNumber = Math.max(...numbers, calculateAverage());
 
-            numbers.forEach((number) => {
+            numbers.forEach((number, index) => {
                 const barContainer = document.createElement('div');
                 barContainer.style.position = 'relative';
 
-                const bar = document.createElement('div');
-                bar.className = 'bar';
+                const blueBar = document.createElement('div');
+                blueBar.className = 'bar blue';
                 const height = (number / maxNumber) * maxHeight;
-                bar.style.height = height + 'vh';
+                blueBar.style.height = height + 'vh';
 
                 const label = document.createElement('div');
                 label.className = 'bar-label';
-                label.textContent = number;
+                label.textContent = String.fromCharCode(65 + index) + " = " + number;
 
-                barContainer.appendChild(bar);
+                const orangeBar = document.createElement('div');
+                orangeBar.className = 'bar orange';
+                const average = calculateAverage();
+                const averageHeight = (average / maxNumber) * maxHeight;
+                orangeBar.style.height = averageHeight + 'vh';
+
+                barContainer.appendChild(blueBar);
                 barContainer.appendChild(label);
                 chart.appendChild(barContainer);
+
+                if (index === numbers.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow';
+                    arrow.textContent = '⇒';
+                    chart.appendChild(arrow);
+                }
+
+                const barContainer2 = document.createElement('div');
+                barContainer2.style.position = 'relative';
+                barContainer2.appendChild(orangeBar);
+                barContainer2.appendChild(label.cloneNode(true));
+                chart.appendChild(barContainer2);
             });
-
-            const average = calculateAverage();
-            const averageHeight = (average / maxNumber) * maxHeight;
-
-            const averageLine = document.createElement('div');
-            averageLine.className = 'average-line';
-            averageLine.style.width = '100%';
-            averageLine.style.top = (maxHeight - averageHeight) + 'vh';
-            chart.appendChild(averageLine);
 
             const averageValue = document.createElement('div');
             averageValue.className = 'average-value';
-            averageValue.textContent = average.toFixed(2);
+            averageValue.textContent = calculateAverage().toFixed(2);
+            const averageHeight = (calculateAverage() / maxNumber) * maxHeight;
             averageValue.style.top = (maxHeight - averageHeight - 1) + 'vh';
             chart.appendChild(averageValue);
         }
