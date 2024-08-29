@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved Average Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        input, button { font-size: 16px; padding: 5px; margin: 5px; }
+        #chart { display: flex; align-items: flex-end; height: 200px; margin-top: 20px; border-bottom: 1px solid black; }
+        .bar { width: 30px; margin-right: 5px; background-color: blue; position: relative; }
+        .average-line { position: absolute; width: 100%; height: 2px; background-color: red; }
+        .bar-label { text-align: center; margin-top: 5px; font-size: 12px; }
+        .info { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Improved Average Calculator</h1>
+    <input type="number" id="numberInput" placeholder="Enter a number">
+    <button onclick="addNumber()">Add Number</button>
+    <div id="numbersList" class="info"></div>
+    <div id="totalDisplay" class="info"></div>
+    <div id="dataPointsDisplay" class="info"></div>
+    <div id="averageDisplay" class="info"></div>
+    <div id="averageEquation" class="info"></div>
+    <div id="chart"></div>
+
+    <script>
+        let numbers = [];
+
+        function addNumber() {
+            const input = document.getElementById('numberInput');
+            const number = parseFloat(input.value);
+            if (!isNaN(number)) {
+                numbers.push(number);
+                input.value = '';
+                updateDisplay();
+            }
+        }
+
+        function calculateTotal() {
+            return numbers.reduce((a, b) => a + b, 0);
+        }
+
+        function calculateAverage() {
+            const total = calculateTotal();
+            return numbers.length > 0 ? total / numbers.length : 0;
+        }
+
+        function updateDisplay() {
+            const numbersList = document.getElementById('numbersList');
+            const totalDisplay = document.getElementById('totalDisplay');
+            const dataPointsDisplay = document.getElementById('dataPointsDisplay');
+            const averageDisplay = document.getElementById('averageDisplay');
+            const averageEquation = document.getElementById('averageEquation');
+            const chart = document.getElementById('chart');
+            
+            numbersList.textContent = 'Numbers: ' + numbers.join(', ');
+            const total = calculateTotal();
+            totalDisplay.textContent = 'Total: ' + total.toFixed(2);
+            dataPointsDisplay.textContent = 'Number of Data Points: ' + numbers.length;
+            const average = calculateAverage();
+            averageDisplay.textContent = 'Average: ' + average.toFixed(2);
+            averageEquation.textContent = `Average = Total / Number of Data Points = ${total.toFixed(2)} / ${numbers.length} = ${average.toFixed(2)}`;
+            
+            chart.innerHTML = '';
+            const maxHeight = 180;
+            const maxNumber = Math.max(...numbers, average);
+            
+            numbers.forEach((number) => {
+                const barContainer = document.createElement('div');
+                barContainer.style.position = 'relative';
+                
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                const height = (number / maxNumber) * maxHeight;
+                bar.style.height = height + 'px';
+                
+                const label = document.createElement('div');
+                label.className = 'bar-label';
+                label.textContent = number;
+                
+                barContainer.appendChild(bar);
+                barContainer.appendChild(label);
+                chart.appendChild(barContainer);
+            });
+
+            // Add average line
+            const averageLine = document.createElement('div');
+            averageLine.className = 'average-line';
+            const averageHeight = (average / maxNumber) * maxHeight;
+            averageLine.style.bottom = averageHeight + 'px';
+            chart.appendChild(averageLine);
+        }
+    </script>
+</body>
+</html>
