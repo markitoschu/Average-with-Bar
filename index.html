@@ -271,10 +271,11 @@
             chart.appendChild(orangeBars);
 
             // Add average line
-            const averageLine = document.createElement('div');
+             const averageLine = document.createElement('div');
             averageLine.className = 'average-line';
-            const averageHeight = (average / maxNumber) * maxHeight;
-            averageLine.style.top = (maxHeight - averageHeight) + 'px';
+            const orangeBar = orangeBars.children[0].children[0]; // Get the first orange bar
+            const averageHeight = orangeBar.offsetHeight; // Get the height of the orange bar
+            averageLine.style.top = (chart.offsetHeight - averageHeight) + 'px'; // Calculate the position of the average line
             const averageValue = document.createElement('div');
             averageValue.className = 'average-value';
             averageValue.textContent = average.toFixed(2);
