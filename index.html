@@ -16,7 +16,7 @@
 </head>
 <body>
     <h1>Improved Average Calculator</h1>
-    <input type="number" id="numberInput" placeholder="Enter a number" onkeydown="if (event.key === 'Enter') addNumber()">
+    <input type="number" id="numberInput" placeholder="Enter a number">
     <button onclick="addNumber()">Add Number</button>
     <div id="numbersList" class="info"></div>
     <div id="totalDisplay" class="info"></div>
@@ -54,32 +54,32 @@
             const averageDisplay = document.getElementById('averageDisplay');
             const averageEquation = document.getElementById('averageEquation');
             const chart = document.getElementById('chart');
-            
-            numbersList.textContent = 'Numbers:'+ numbers.join(', ');
+
+            numbersList.textContent = 'Numbers: ' numbers.join(', ');
             const total = calculateTotal();
-            totalDisplay.textContent = 'Total:'+ total.toFixed(2);
-            dataPointsDisplay.textContent = 'Number of Data Points:'+ numbers.length;
+            totalDisplay.textContent = 'Total: ' total.toFixed(2);
+            dataPointsDisplay.textContent = 'Number of Data Points: ' numbers.length;
             const average = calculateAverage();
-            averageDisplay.textContent = 'Average:'+ average.toFixed(2);
+            averageDisplay.textContent = 'Average: ' average.toFixed(2);
             averageEquation.textContent = `Average = Total / Number of Data Points = ${total.toFixed(2)} / ${numbers.length} = ${average.toFixed(2)}`;
-            
+
             chart.innerHTML = '';
             const maxHeight = 180;
             const maxNumber = Math.max(...numbers, average);
-            
+
             numbers.forEach((number) => {
                 const barContainer = document.createElement('div');
-                barContainer.style.position ='relative';
-                
+                barContainer.style.position = 'elative';
+
                 const bar = document.createElement('div');
                 bar.className = 'bar';
                 const height = (number / maxNumber) * maxHeight;
                 bar.style.height = height + 'px';
-                
+
                 const label = document.createElement('div');
                 label.className = 'bar-label';
                 label.textContent = number;
-                
+
                 barContainer.appendChild(bar);
                 barContainer.appendChild(label);
                 chart.appendChild(barContainer);
@@ -89,9 +89,16 @@
             const averageLine = document.createElement('div');
             averageLine.className = 'average-line';
             const averageHeight = (average / maxNumber) * maxHeight;
-            averageLine.style.top = (maxHeight - averageHeight) + 'px'; // Change this line
+            averageLine.style.top = (maxHeight - averageHeight) + 'px';
             chart.appendChild(averageLine);
         }
+
+        // Add event listener for Enter key press
+        document.getElementById('numberInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addNumber();
+            }
+        });
     </script>
 </body>
 </html>
