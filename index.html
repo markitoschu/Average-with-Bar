@@ -225,15 +225,6 @@
 
             chart.appendChild(orangeBars);
 
-            // Add average line
-            const averageLine = document.createElement('div');
-            averageLine.className = 'average-line';
-            averageLine.style.top = (maxHeight - (average / maxNumber) * maxHeight) + 'px';
-            const averageValue = document.createElement('div');
-            averageValue.className = 'average-value';
-            averageValue.textContent = average.toFixed(2);
-            averageLine.appendChild(averageValue);
-            chart.appendChild(averageLine);
         }
 
         function resetCalculator() {
