@@ -7,54 +7,39 @@
     <style>
         body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
         input, button { font-size: 16px; padding: 5px; margin: 5px; }
-        #chart { display: flex; align-items: flex-end; height: 30vh; margin-top: 20px; border-bottom: 1px solid black; position: relative; }
+        #chart { display: flex; justify-content: space-between; align-items: flex-end; height: 200px; margin-top: 20px; border-bottom: 1px solid black; }
         .bar { width: 30px; margin-right: 5px; position: relative; }
-        .bar.blue { background-color: blue; }
-        .bar.orange { background-color: orange; }
+        .bar-value { text-align: center; margin-top: 5px; font-size: 12px; }
+        .bar-label { text-align: center; font-size: 12px; }
         .average-line { position: absolute; height: 2px; background-color: red; }
-        .average-value { position: absolute; right: -40px; top: -10px; font-size: 14px; color: red; }
-        .bar-label { text-align: center; margin-top: 5px; font-size: 12px; }
-        .arrow { margin-left: 10px; margin-right: 10px; font-size: 24px; display: flex; align-items: center; }
-        .info { margin-top: 20px; }
-        .error { color: red; }
         .reset-button { background-color: red; color: white; }
+        .arrow { font-size: 32px; margin: 0 20px; align-self: center; }
+        .chart-container { display: flex; justify-content: space-between; align-items: flex-end; width: 45%; }
     </style>
 </head>
 <body>
-    <h1>Improved Average Calculator</h1>
+    <h1>Average Calculator</h1>
     <input type="number" id="numberInput" placeholder="Enter a number">
     <button onclick="addNumber()">Add Number</button>
     <button class="reset-button" onclick="resetCalculator()">Reset</button>
-    <div id="errorDisplay" class="error"></div>
     <div id="numbersList" class="info"></div>
     <div id="totalDisplay" class="info"></div>
     <div id="dataPointsDisplay" class="info"></div>
     <div id="averageDisplay" class="info"></div>
     <div id="averageEquation" class="info"></div>
-    <div id="chart"></div>
+    <div id="chart" class="chart-container"></div>
 
     <script>
         let numbers = [];
 
         function addNumber() {
             const input = document.getElementById('numberInput');
-            const errorDisplay = document.getElementById('errorDisplay');
             const number = parseFloat(input.value);
-
-            if (isNaN(number)) {
-                errorDisplay.textContent = 'Please enter a valid number.';
-                return;
+            if (!isNaN(number)) {
+                numbers.push(number);
+                input.value = '';
+                updateDisplay();
             }
-
-            errorDisplay.textContent = '';
-            numbers.push(number);
-            input.value = '';
-            updateDisplay();
-        }
-
-        function resetCalculator() {
-            numbers = [];
-            updateDisplay();
         }
 
         function calculateTotal() {
@@ -66,95 +51,100 @@
             return numbers.length > 0 ? total / numbers.length : 0;
         }
 
-        function updateNumbersList() {
+        function updateDisplay() {
             const numbersList = document.getElementById('numbersList');
-            numbersList.textContent = 'Numbers: ' + numbers.join(', ');
-        }
-
-        function updateTotalDisplay() {
             const totalDisplay = document.getElementById('totalDisplay');
-            const total = calculateTotal();
-            totalDisplay.textContent = 'Total: ' + total.toFixed(2) + ' ( ' + numbers.join(' + ') + ' )';
-        }
-
-        function updateDataPointsDisplay() {
             const dataPointsDisplay = document.getElementById('dataPointsDisplay');
-            dataPointsDisplay.textContent = 'Number of Data Points: ' + numbers.length;
-        }
-
-        function updateAverageDisplay() {
             const averageDisplay = document.getElementById('averageDisplay');
+            const averageEquation = document.getElementById('averageEquation');
+            const chart = document.getElementById('chart');
+
+            numbersList.textContent = 'Numbers: ' + numbers.join(', ');
+            const total = calculateTotal();
+            totalDisplay.textContent = 'Total: ' + total.toFixed(2);
+            dataPointsDisplay.textContent = 'Number of Data Points: ' + numbers.length;
             const average = calculateAverage();
             averageDisplay.textContent = 'Average: ' + average.toFixed(2);
-        }
-
-        function updateAverageEquation() {
-            const averageEquation = document.getElementById('averageEquation');
-            const total = calculateTotal();
-            const average = calculateAverage();
             averageEquation.textContent = `Average = Total / Number of Data Points = ${total.toFixed(2)} / ${numbers.length} = ${average.toFixed(2)}`;
-        }
 
-        function updateChart() {
-            const chart = document.getElementById('chart');
             chart.innerHTML = '';
-            const maxHeight = 30; // vh units
-            const maxNumber = Math.max(...numbers, calculateAverage());
+            const maxHeight = 180;
+            const maxNumber = Math.max(...numbers, average);
+
+            const blueBars = document.createElement('div');
+            blueBars.className = 'chart-container';
 
             numbers.forEach((number, index) => {
                 const barContainer = document.createElement('div');
-                barContainer.style.position = 'relative';
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (number / maxNumber) * maxHeight + 'px';
+                bar.style.backgroundColor = 'blue';
 
-                const blueBar = document.createElement('div');
-                blueBar.className = 'bar blue';
-                const height = (number / maxNumber) * maxHeight;
-                blueBar.style.height = height + 'vh';
+                const value = document.createElement('div');
+                value.className = 'bar-value';
+                value.textContent = number.toFixed(2);
 
                 const label = document.createElement('div');
                 label.className = 'bar-label';
-                label.textContent = String.fromCharCode(65 + index) + " = " + number;
+                label.textContent = String.fromCharCode(65 + index);
 
-                const orangeBar = document.createElement('div');
-                orangeBar.className = 'bar orange';
-                const average = calculateAverage();
-                const averageHeight = (average / maxNumber) * maxHeight;
-                orangeBar.style.height = averageHeight + 'vh';
-
-                barContainer.appendChild(blueBar);
+                barContainer.appendChild(bar);
+                barContainer.appendChild(value);
                 barContainer.appendChild(label);
-                chart.appendChild(barContainer);
-
-                if (index === numbers.length - 1) {
-                    const arrow = document.createElement('div');
-                    arrow.className = 'arrow';
-                    arrow.textContent = '⇒';
-                    chart.appendChild(arrow);
-                }
-
-                const barContainer2 = document.createElement('div');
-                barContainer2.style.position = 'relative';
-                barContainer2.appendChild(orangeBar);
-                barContainer2.appendChild(label.cloneNode(true));
-                chart.appendChild(barContainer2);
+                blueBars.appendChild(barContainer);
             });
 
-            const averageValue = document.createElement('div');
-            averageValue.className = 'average-value';
-            averageValue.textContent = calculateAverage().toFixed(2);
-            const averageHeight = (calculateAverage() / maxNumber) * maxHeight;
-            averageValue.style.top = (maxHeight - averageHeight - 1) + 'vh';
-            chart.appendChild(averageValue);
+            const orangeBars = document.createElement('div');
+            orangeBars.className = 'chart-container';
+
+            numbers.forEach((_, index) => {
+                const barContainer = document.createElement('div');
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (average / maxNumber) * maxHeight + 'px';
+                bar.style.backgroundColor = 'orange';
+
+                const value = document.createElement('div');
+                value.className = 'bar-value';
+                value.textContent = average.toFixed(2);
+
+                const label = document.createElement('div');
+                label.className = 'bar-label';
+                label.textContent = String.fromCharCode(65 + index);
+
+                barContainer.appendChild(bar);
+                barContainer.appendChild(value);
+                barContainer.appendChild(label);
+                orangeBars.appendChild(barContainer);
+            });
+
+            chart.appendChild(blueBars);
+
+            const arrow = document.createElement('div');
+            arrow.className = 'arrow';
+            arrow.textContent = '➔';
+            chart.appendChild(arrow);
+
+            chart.appendChild(orangeBars);
+
+            // Add average line
+            const averageLine = document.createElement('div');
+            averageLine.className = 'average-line';
+            averageLine.style.top = (maxHeight - (average / maxNumber) * maxHeight) + 'px';
+            averageLine.style.width = '100%';
+            averageLine.textContent = average.toFixed(2);
+            averageLine.style.textAlign = 'right';
+            averageLine.style.color = 'red';
+            chart.appendChild(averageLine);
         }
 
-        function updateDisplay() {
-            updateNumbersList();
-            updateTotalDisplay();
-            updateDataPointsDisplay();
-            updateAverageDisplay();
-            updateAverageEquation();
-            updateChart();
+        function resetCalculator() {
+            numbers = [];
+            updateDisplay();
         }
 
+        // Add event listener for Enter key press
         document.getElementById('numberInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 addNumber();
