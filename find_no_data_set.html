@@ -58,9 +58,9 @@
         }
         #chart {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            height: 400px;
+            height: 350px;
             width: 100%;
             max-width: 600px;
             margin-top: 20px;
@@ -84,6 +84,7 @@
         .average-bar {
             height: 30px;
             border: 2px dotted #ff9500;
+            border-radius: 4px;
             position: absolute;
         }
         .average-bar-left {
@@ -95,8 +96,6 @@
         .dotted-line {
             position: absolute;
             top: 0;
-            left: 60px; /* Adjusted to fit within the total bar */
-            right: 60px; /* Adjusted to fit within the total bar */
             height: 30px;
             border-top: 2px dotted #ff9500;
             z-index: 1;
@@ -105,30 +104,27 @@
             font-size: 60px;
             color: #007aff;
             position: absolute;
-            bottom: -50px; /* Adjusted to align directly under the total bar */
+            bottom: -60px;
             left: 50%;
             transform: translateX(-50%);
         }
         .shaded-bars {
             display: flex;
-            justify-content: flex-start;
-            width: 400px; /* Same width as the total bar */
+            justify-content: center;
+            align-items: flex-end;
+            width: 100%;
             height: 30px;
             margin-top: 10px;
         }
         .shaded-bar {
-            width: 40px; /* Same width as the average bars */
             height: 30px;
             background-color: #ff9500;
-            margin-right: 0;
             border-radius: 4px;
         }
         .nav-buttons {
             position: absolute;
             top: 20px;
             right: 20px;
-            display: flex;
-            flex-direction: column;
         }
         .nav-button {
             background-color: #34c759;
@@ -140,6 +136,7 @@
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             font-weight: bold;
+            display: block;
             margin-bottom: 10px;
         }
         .nav-button.secondary {
@@ -194,30 +191,38 @@
             totalBarValue.textContent = total.toFixed(2);
             chart.appendChild(totalBarValue);
 
-            // Calculate proportional size of average bars
-            const averageBarWidth = (400 / total) * average;
+            // Calculate proportions
+            const totalBarWidth = totalBar.offsetWidth;
+            const averageBarWidth = (average / total) * totalBarWidth;
+            const numBarsBelowArrow = Math.floor(total / average);
 
             // Create average bars
             const averageBarLeft = document.createElement('div');
-            averageBarLeft.className = 'average-bar average-bar-left';
+            averageBarLeft.className = 'average-bar';
             averageBarLeft.style.width = `${averageBarWidth}px`;
+            averageBarLeft.style.left = '10px';
             chart.appendChild(averageBarLeft);
 
             const averageBarRight = document.createElement('div');
-            averageBarRight.className = 'average-bar average-bar-right';
+            averageBarRight.className = 'average-bar';
             averageBarRight.style.width = `${averageBarWidth}px`;
+            averageBarRight.style.right = '10px';
             chart.appendChild(averageBarRight);
 
             // Create dotted line
             const dottedLine = document.createElement('div');
             dottedLine.className = 'dotted-line';
+            dottedLine.style.left = `${averageBarWidth + 10}px`;
+            dottedLine.style.right = `${averageBarWidth + 10}px`;
             chart.appendChild(dottedLine);
 
             // Create downward arrow
             const arrow = document.createElement('div');
             arrow.className = 'arrow';
-            arrow.textContent = '↓';
-            arrow.style.width = `${0.25 * 400}px`; // 25% of the width of the Total bar
+            arrow.style.width = `${0.25 * totalBarWidth}px`;
+            arrow.style.border = 'solid';
+            arrow.style.borderWidth = '0 12px 20px 12px';
+            arrow.style.borderColor = `transparent transparent #007aff transparent`;
             chart.appendChild(arrow);
 
             // Create shaded bars
@@ -225,9 +230,10 @@
             shadedBarsContainer.className = 'shaded-bars';
             chart.appendChild(shadedBarsContainer);
 
-            for (let i = 0; i < numDataPoints; i++) {
+            for (let i = 0; i < numBarsBelowArrow; i++) {
                 const shadedBar = document.createElement('div');
                 shadedBar.className = 'shaded-bar';
+                shadedBar.style.width = `${averageBarWidth}px`;
                 shadedBarsContainer.appendChild(shadedBar);
             }
         }
@@ -239,14 +245,9 @@
             document.getElementById('chart').innerHTML = '';
         }
 
-        // Add event listeners for Enter key press
-        document.getElementById('totalInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('averageInput').focus();
-            }
-        });
-        document.getElementById('averageInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+        // Trigger calculation on Enter key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
                 calculateDataPoints();
             }
         });
