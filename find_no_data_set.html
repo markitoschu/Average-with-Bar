@@ -60,14 +60,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 400px;
-            width: 100%;
-            max-width: 600px;
+            height: auto;
+            width: 400px; /* Fixed width */
             margin-top: 20px;
             position: relative;
         }
         .total-bar {
-            width: 400px; /* Fixed width */
+            width: 100%; /* Fixed width */
             height: 30px;
             background-color: #007aff;
             position: relative;
@@ -82,53 +81,22 @@
             color: #007aff;
         }
         .average-bar {
-            height: 30px;
-            border: 2px solid black;
-            color: white;
-            position: absolute;
-            font-size: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: none;
-        }
-        .average-bar-left {
-            left: 0;
-        }
-        .average-bar-right {
-            right: 0;
-        }
-        .dotted-line {
-            position: absolute;
-            top: 0;
-            left: 60px; /* Adjusted to fit within the total bar */
-            right: 60px; /* Adjusted to fit within the total bar */
-            height: 30px;
-            border-top: 2px dotted black;
-            z-index: 1;
-        }
-        .arrow {
-            font-size: 40px;
-            color: #007aff;
-            position: absolute;
-            bottom: -30px; /* Adjusted to align immediately under the total bar */
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .shaded-bars {
-            display: flex;
-            justify-content: flex-start;
-            width: 400px; /* Same width as the total bar */
-            height: 30px;
-            margin-top: 10px;
-        }
-        .shaded-bar {
-            width: 40px; /* Same width as the average bars */
+            width: 100%; /* Fixed width */
             height: 30px;
             background-color: #ff9500;
-            border: none;
-            margin-right: 0;
-            border-radius: 4px;
+            position: relative;
+            display: flex;
+        }
+        .average-section {
+            height: 30px;
+            border-left: 1px solid #ff9500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .average-value {
+            font-size: 16px;
+            color: #fff;
         }
         .nav-buttons {
             position: absolute;
@@ -178,12 +146,12 @@
             const average = parseFloat(averageInput.value);
 
             if (!isNaN(total) && !isNaN(average) && average > 0) {
-                const numDataPoints = Math.round(total / average);
-                updateDisplay(total, average, numDataPoints);
+                const numSections = Math.ceil(total / average);
+                updateDisplay(total, average, numSections);
             }
         }
 
-        function updateDisplay(total, average, numDataPoints) {
+        function updateDisplay(total, average, numSections) {
             const calculationDisplay = document.getElementById('calculationDisplay');
             const chart = document.getElementById('chart');
             chart.innerHTML = '';
@@ -201,43 +169,21 @@
             totalBarValue.textContent = total.toFixed(2);
             chart.appendChild(totalBarValue);
 
-            // Calculate proportional size of average bars
-            const averageBarWidth = (400 / total) * average;
+            // Create average bar
+            const averageBar = document.createElement('div');
+            averageBar.className = 'average-bar';
+            chart.appendChild(averageBar);
 
-            // Create average bars
-            const averageBarLeft = document.createElement('div');
-            averageBarLeft.className = 'average-bar average-bar-left';
-            averageBarLeft.style.width = `${averageBarWidth}px`;
-            averageBarLeft.textContent = average.toFixed(2);
-            chart.appendChild(averageBarLeft);
+            // Calculate width of each section
+            const sectionWidth = 100 / numSections;
 
-            const averageBarRight = document.createElement('div');
-            averageBarRight.className = 'average-bar average-bar-right';
-            averageBarRight.style.width = `${averageBarWidth}px`;
-            averageBarRight.textContent = average.toFixed(2);
-            chart.appendChild(averageBarRight);
-
-            // Create dotted line
-            const dottedLine = document.createElement('div');
-            dottedLine.className = 'dotted-line';
-            chart.appendChild(dottedLine);
-
-            // Create downward arrow
-            const arrow = document.createElement('div');
-            arrow.className = 'arrow';
-            arrow.textContent = '↓';
-            arrow.style.width = `${0.25 * 400}px`; // Shortened width of the arrow
-            chart.appendChild(arrow);
-
-            // Create shaded bars
-            const shadedBarsContainer = document.createElement('div');
-            shadedBarsContainer.className = 'shaded-bars';
-            chart.appendChild(shadedBarsContainer);
-
-            for (let i = 0; i < numDataPoints; i++) {
-                const shadedBar = document.createElement('div');
-                shadedBar.className = 'shaded-bar';
-                shadedBarsContainer.appendChild(shadedBar);
+            // Create sections
+            for (let i = 0; i < numSections; i++) {
+                const averageSection = document.createElement('div');
+                averageSection.className = 'average-section';
+                averageSection.style.width = `${sectionWidth}%`;
+                averageSection.innerHTML = `<span class="average-value">${average.toFixed(2)}</span>`;
+                averageBar.appendChild(averageSection);
             }
         }
 
@@ -262,4 +208,3 @@
     </script>
 </body>
 </html>
-
