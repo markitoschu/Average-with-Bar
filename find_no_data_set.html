@@ -82,49 +82,53 @@
             color: #007aff;
         }
         .average-bar {
+            width: 40px;
             height: 30px;
             border: 2px dotted #ff9500;
             border-radius: 4px;
             position: absolute;
         }
         .average-bar-left {
-            left: 0;
+            left: 10px;
         }
         .average-bar-right {
-            right: 0;
+            right: 10px;
         }
         .dotted-line {
             position: absolute;
             top: 0;
+            left: 50px;
+            right: 50px;
             height: 30px;
             border-top: 2px dotted #ff9500;
             z-index: 1;
         }
         .arrow {
-            font-size: 60px;
-            color: #007aff;
+            font-size: 0;
+            border-left: 0 solid transparent;
+            border-right: 0 solid transparent;
+            border-top: 60px solid #007aff;
             position: absolute;
             bottom: -60px;
             left: 50%;
             transform: translateX(-50%);
+            width: 25%; /* 25% of the width of the total bar */
         }
         .shaded-bars {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: flex-end;
             width: 100%;
             height: 30px;
             margin-top: 10px;
+            position: relative;
         }
         .shaded-bar {
+            width: 40px; /* Same width as the average bar */
             height: 30px;
             background-color: #ff9500;
             border-radius: 4px;
-        }
-        .nav-buttons {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            margin-right: 0;
         }
         .nav-button {
             background-color: #34c759;
@@ -136,20 +140,22 @@
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 150px;
         }
         .nav-button.secondary {
             background-color: #007aff;
+            top: 60px;
+            right: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Find Number of Data Points</h1>
-    <div class="nav-buttons">
-        <button class="nav-button" onclick="window.location.href='find_total.html'">Find Total with Average & No. of Data</button>
-        <button class="nav-button secondary" onclick="window.location.href='index.html'">Find Average with Total & No. of Data</button>
-    </div>
+    <button class="nav-button" onclick="window.location.href='find_total.html'">Find Total with Average & No. of Data</button>
+    <button class="nav-button secondary" onclick="window.location.href='index.html'">Find Average with Total & No. of Data</button>
     
     <div style="display: flex; align-items: center;">
         <input type="number" id="totalInput" placeholder="Enter Total">
@@ -191,38 +197,25 @@
             totalBarValue.textContent = total.toFixed(2);
             chart.appendChild(totalBarValue);
 
-            // Calculate proportions
-            const totalBarWidth = totalBar.offsetWidth;
-            const averageBarWidth = (average / total) * totalBarWidth;
-            const numBarsBelowArrow = Math.floor(total / average);
-
             // Create average bars
             const averageBarLeft = document.createElement('div');
-            averageBarLeft.className = 'average-bar';
-            averageBarLeft.style.width = `${averageBarWidth}px`;
-            averageBarLeft.style.left = '10px';
+            averageBarLeft.className = 'average-bar average-bar-left';
+            averageBarLeft.style.width = `${Math.min((average / total) * 400, 40)}px`; // Proportional width
             chart.appendChild(averageBarLeft);
 
             const averageBarRight = document.createElement('div');
-            averageBarRight.className = 'average-bar';
-            averageBarRight.style.width = `${averageBarWidth}px`;
-            averageBarRight.style.right = '10px';
+            averageBarRight.className = 'average-bar average-bar-right';
+            averageBarRight.style.width = `${Math.min((average / total) * 400, 40)}px`; // Proportional width
             chart.appendChild(averageBarRight);
 
             // Create dotted line
             const dottedLine = document.createElement('div');
             dottedLine.className = 'dotted-line';
-            dottedLine.style.left = `${averageBarWidth + 10}px`;
-            dottedLine.style.right = `${averageBarWidth + 10}px`;
             chart.appendChild(dottedLine);
 
             // Create downward arrow
             const arrow = document.createElement('div');
             arrow.className = 'arrow';
-            arrow.style.width = `${0.25 * totalBarWidth}px`;
-            arrow.style.border = 'solid';
-            arrow.style.borderWidth = '0 12px 20px 12px';
-            arrow.style.borderColor = `transparent transparent #007aff transparent`;
             chart.appendChild(arrow);
 
             // Create shaded bars
@@ -230,10 +223,10 @@
             shadedBarsContainer.className = 'shaded-bars';
             chart.appendChild(shadedBarsContainer);
 
-            for (let i = 0; i < numBarsBelowArrow; i++) {
+            const barWidth = 40;
+            for (let i = 0; i < numDataPoints; i++) {
                 const shadedBar = document.createElement('div');
                 shadedBar.className = 'shaded-bar';
-                shadedBar.style.width = `${averageBarWidth}px`;
                 shadedBarsContainer.appendChild(shadedBar);
             }
         }
@@ -245,9 +238,14 @@
             document.getElementById('chart').innerHTML = '';
         }
 
-        // Trigger calculation on Enter key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
+        // Add event listeners for Enter key press
+        document.getElementById('totalInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('averageInput').focus();
+            }
+        });
+        document.getElementById('averageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
                 calculateDataPoints();
             }
         });
