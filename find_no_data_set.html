@@ -58,9 +58,9 @@
         }
         #chart {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 350px;
+            height: 400px;
             width: 100%;
             max-width: 600px;
             margin-top: 20px;
@@ -82,53 +82,53 @@
             color: #007aff;
         }
         .average-bar {
-            width: 40px;
             height: 30px;
             border: 2px dotted #ff9500;
-            border-radius: 4px;
             position: absolute;
         }
         .average-bar-left {
-            left: 10px;
+            left: 0;
         }
         .average-bar-right {
-            right: 10px;
+            right: 0;
         }
         .dotted-line {
             position: absolute;
             top: 0;
-            left: 50px;
-            right: 50px;
+            left: 60px; /* Adjusted to fit within the total bar */
+            right: 60px; /* Adjusted to fit within the total bar */
             height: 30px;
             border-top: 2px dotted #ff9500;
             z-index: 1;
         }
         .arrow {
-            font-size: 0;
-            border-left: 0 solid transparent;
-            border-right: 0 solid transparent;
-            border-top: 60px solid #007aff;
+            font-size: 60px;
+            color: #007aff;
             position: absolute;
-            bottom: -60px;
+            bottom: -50px; /* Adjusted to align directly under the total bar */
             left: 50%;
             transform: translateX(-50%);
-            width: 25%; /* 25% of the width of the total bar */
         }
         .shaded-bars {
             display: flex;
             justify-content: flex-start;
-            align-items: flex-end;
-            width: 100%;
+            width: 400px; /* Same width as the total bar */
             height: 30px;
             margin-top: 10px;
-            position: relative;
         }
         .shaded-bar {
-            width: 40px; /* Same width as the average bar */
+            width: 40px; /* Same width as the average bars */
             height: 30px;
             background-color: #ff9500;
-            border-radius: 4px;
             margin-right: 0;
+            border-radius: 4px;
+        }
+        .nav-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
         }
         .nav-button {
             background-color: #34c759;
@@ -140,22 +140,19 @@
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             font-weight: bold;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 150px;
+            margin-bottom: 10px;
         }
         .nav-button.secondary {
             background-color: #007aff;
-            top: 60px;
-            right: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Find Number of Data Points</h1>
-    <button class="nav-button" onclick="window.location.href='find_total.html'">Find Total with Average & No. of Data</button>
-    <button class="nav-button secondary" onclick="window.location.href='index.html'">Find Average with Total & No. of Data</button>
+    <div class="nav-buttons">
+        <button class="nav-button" onclick="window.location.href='find_total.html'">Find Total with Average & No. of Data</button>
+        <button class="nav-button secondary" onclick="window.location.href='index.html'">Find Average with Total & No. of Data</button>
+    </div>
     
     <div style="display: flex; align-items: center;">
         <input type="number" id="totalInput" placeholder="Enter Total">
@@ -197,15 +194,18 @@
             totalBarValue.textContent = total.toFixed(2);
             chart.appendChild(totalBarValue);
 
+            // Calculate proportional size of average bars
+            const averageBarWidth = (400 / total) * average;
+
             // Create average bars
             const averageBarLeft = document.createElement('div');
             averageBarLeft.className = 'average-bar average-bar-left';
-            averageBarLeft.style.width = `${Math.min((average / total) * 400, 40)}px`; // Proportional width
+            averageBarLeft.style.width = `${averageBarWidth}px`;
             chart.appendChild(averageBarLeft);
 
             const averageBarRight = document.createElement('div');
             averageBarRight.className = 'average-bar average-bar-right';
-            averageBarRight.style.width = `${Math.min((average / total) * 400, 40)}px`; // Proportional width
+            averageBarRight.style.width = `${averageBarWidth}px`;
             chart.appendChild(averageBarRight);
 
             // Create dotted line
@@ -216,6 +216,8 @@
             // Create downward arrow
             const arrow = document.createElement('div');
             arrow.className = 'arrow';
+            arrow.textContent = '↓';
+            arrow.style.width = `${0.25 * 400}px`; // 25% of the width of the Total bar
             chart.appendChild(arrow);
 
             // Create shaded bars
@@ -223,7 +225,6 @@
             shadedBarsContainer.className = 'shaded-bars';
             chart.appendChild(shadedBarsContainer);
 
-            const barWidth = 40;
             for (let i = 0; i < numDataPoints; i++) {
                 const shadedBar = document.createElement('div');
                 shadedBar.className = 'shaded-bar';
@@ -252,3 +253,4 @@
     </script>
 </body>
 </html>
+
