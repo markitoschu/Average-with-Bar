@@ -97,7 +97,7 @@
             justify-content: space-between;
             align-items: flex-end;
             width: 45%;
-         }
+        }
         .nav-button {
             background-color: #34c759;
             color: white;
@@ -148,7 +148,7 @@
 
         function calculateAverage() {
             const total = calculateTotal();
-            return numbers.length > 0 ? total / numbers.length : 0;
+            return numbers.length > 0 ? (total / numbers.length).toFixed(2) : 0;
         }
 
         function updateDisplay() {
@@ -172,8 +172,8 @@
 
             // Update average display and equation with the division symbol
             const average = calculateAverage();
-            averageDisplay.textContent = 'Average: ' + average.toFixed(2);
-            averageEquation.textContent = `Average = Total ÷ Number of Data Points = ${total.toFixed(2)} ÷ ${numbers.length} = ${average.toFixed(2)}`;
+            averageDisplay.textContent = 'Average: ' + average;
+            averageEquation.textContent = `Average = Total ÷ Number of Data Points = ${total.toFixed(2)} ÷ ${numbers.length} = ${average}`;
 
             // Update chart
             chart.innerHTML = '';
@@ -215,7 +215,7 @@
 
                 const value = document.createElement('div');
                 value.className = 'bar-value';
-                value.textContent = average.toFixed(2);
+                value.textContent = average;
 
                 const label = document.createElement('div');
                 label.className = 'bar-label';
