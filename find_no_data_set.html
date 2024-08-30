@@ -58,7 +58,7 @@
         }
         #chart {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: flex-end;
             height: 200px;
             width: 100%;
@@ -103,6 +103,9 @@
             font-size: 60px;
             color: #007aff;
             margin: 10px 0;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
         .nav-button {
             background-color: #34c759;
@@ -120,7 +123,7 @@
         }
         .nav-button.secondary {
             background-color: #007aff;
-            top: 70px; /* Adjust to stack vertically */
+            top: 80px;
         }
     </style>
 </head>
@@ -146,7 +149,7 @@
             const average = parseFloat(averageInput.value);
 
             if (!isNaN(total) && !isNaN(average) && average > 0) {
-                const numDataPoints = Math.floor(total / average); // Use floor to fit more accurately
+                const numDataPoints = Math.floor(total / average);
                 updateDisplay(total, average, numDataPoints);
             }
         }
@@ -157,7 +160,7 @@
             chart.innerHTML = '';
 
             // Update calculation display
-            calculationDisplay.textContent = `Number of Data Points = Total ÷ Average = ${total.toFixed(2)} ÷ ${average.toFixed(2)} = ${numDataPoints}`;
+            calculationDisplay.textContent = `Number of Data Points = Total ÷ Average = ${total.toFixed(2)} ÷ ${average.toFixed(2)} = ${Math.floor(total / average)}`;
 
             // Create total bar
             const totalBar = document.createElement('div');
@@ -169,30 +172,30 @@
             totalBarValue.textContent = total.toFixed(2);
             chart.appendChild(totalBarValue);
 
-            // Create average bars
-            const averageBarWidth = 20;
-            const spaceWidth = 2;
-            const totalBarWidth = chart.offsetWidth;
-            const totalBarsWidth = numDataPoints * (averageBarWidth + spaceWidth) - spaceWidth;
-            const numFullBars = Math.floor(totalBarWidth / (averageBarWidth + spaceWidth));
-
-            // Create shaded bars
-            for (let i = 0; i < numFullBars; i++) {
-                const shadedBar = document.createElement('div');
-                shadedBar.className = 'average-bar';
-                shadedBar.style.backgroundColor = '#ff9500';
-                shadedBar.style.height = '30px';
-                shadedBar.style.width = `${averageBarWidth}px`;
-                shadedBar.style.marginRight = `${spaceWidth}px`;
-                shadedBar.style.position = 'absolute';
-                shadedBar.style.left = `${i * (averageBarWidth + spaceWidth)}px`;
-                chart.appendChild(shadedBar);
-            }
-
             // Create space
             const space = document.createElement('div');
             space.className = 'space';
             chart.appendChild(space);
+
+            // Create shaded bars
+            let totalWidth = totalBar.offsetWidth;
+            let barWidth = 20;
+            let marginRight = 2;
+
+            for (let i = 0; i < numDataPoints; i++) {
+                const shadedBar = document.createElement('div');
+                shadedBar.className = 'average-bar';
+                shadedBar.style.width = `${barWidth}px`;
+                shadedBar.style.marginRight = `${marginRight}px`;
+                shadedBar.style.backgroundColor = '#ff9500';
+                chart.appendChild(shadedBar);
+            }
+
+            // Adjust the length of the dotted line
+            const spaceLine = document.createElement('div');
+            spaceLine.style.width = `${numDataPoints * (barWidth + marginRight)}px`;
+            spaceLine.className = 'space';
+            chart.appendChild(spaceLine);
 
             // Create downward arrow
             const arrow = document.createElement('div');
