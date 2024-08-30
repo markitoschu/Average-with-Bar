@@ -60,7 +60,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 400px;
+            height: 500px; /* Increased height */
             width: 100%;
             max-width: 600px;
             margin-top: 20px;
@@ -83,8 +83,14 @@
         }
         .average-bar {
             height: 30px;
-            border: 2px dotted #ff9500;
+            border: 2px solid black;
             position: absolute;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
         }
         .average-bar-left {
             left: 0;
@@ -102,10 +108,10 @@
             z-index: 1;
         }
         .arrow {
-            font-size: 60px;
+            font-size: 40px; /* Shortened arrow */
             color: #007aff;
             position: absolute;
-            bottom: -50px; /* Adjusted to align directly under the total bar */
+            bottom: -40px; /* Adjusted to align directly under the total bar */
             left: 50%;
             transform: translateX(-50%);
         }
@@ -201,11 +207,13 @@
             const averageBarLeft = document.createElement('div');
             averageBarLeft.className = 'average-bar average-bar-left';
             averageBarLeft.style.width = `${averageBarWidth}px`;
+            averageBarLeft.textContent = average.toFixed(2);
             chart.appendChild(averageBarLeft);
 
             const averageBarRight = document.createElement('div');
             averageBarRight.className = 'average-bar average-bar-right';
             averageBarRight.style.width = `${averageBarWidth}px`;
+            averageBarRight.textContent = average.toFixed(2);
             chart.appendChild(averageBarRight);
 
             // Create dotted line
@@ -217,7 +225,6 @@
             const arrow = document.createElement('div');
             arrow.className = 'arrow';
             arrow.textContent = '↓';
-            arrow.style.width = `${0.25 * 400}px`; // 25% of the width of the Total bar
             chart.appendChild(arrow);
 
             // Create shaded bars
@@ -238,19 +245,6 @@
             document.getElementById('calculationDisplay').textContent = '';
             document.getElementById('chart').innerHTML = '';
         }
-
-        // Add event listeners for Enter key press
-        document.getElementById('totalInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('averageInput').focus();
-            }
-        });
-        document.getElementById('averageInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                calculateDataPoints();
-            }
-        });
     </script>
 </body>
 </html>
-
