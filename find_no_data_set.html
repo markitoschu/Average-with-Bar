@@ -117,11 +117,25 @@
             margin-bottom: 10px;
         }
         .nav-button.secondary {
-            background-color: #007aff;
+        background-color: #007aff;
+        }
+        /* New CSS for the image */
+        .logo-image {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 100px;
+            height: auto;
         }
     </style>
 </head>
 <body>
+    <div style="position: absolute; top: 20px; left: 20px;">
+    <a href="https://github.com/markitoschu/image/raw/main/image.png">
+        <img src="https://github.com/markitoschu/image/raw/main/image.png" alt="Description of Image" style="width: 100px; height: auto;">
+    </a>
+</div>
+
     <h1>Find Number of Data Points</h1>
     <div class="nav-buttons">
         <button class="nav-button" onclick="window.location.href='find_total.html'">Find Total with Average & No. of Data</button>
