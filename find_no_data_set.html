@@ -58,81 +58,74 @@
         }
         #chart {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            width: 600px;
+            height: 300px;
+            width: 100%;
+            max-width: 600px;
             margin-top: 20px;
             position: relative;
         }
         .total-bar {
-            width: 100%;
+            width: 400px; /* Fixed width */
             height: 30px;
             background-color: #007aff;
             position: relative;
-            margin-bottom: 20px;
         }
         .total-bar-value {
             position: absolute;
             top: 35px;
-            left: 0;
-            right: 0;
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
             font-size: 16px;
             color: #007aff;
         }
         .average-bar {
-            width: 20px;
-            background-color: transparent;
-            position: absolute;
+            width: 40px;
             height: 30px;
             border-radius: 4px;
-            border: 2px solid #ff9500;
-            box-sizing: border-box;
+            position: absolute;
         }
         .average-bar-left {
-            left: 0;
-            border-left: none;
-            background: repeating-linear-gradient(45deg, transparent, transparent 10px, #ff6f00 10px, #ff6f00 20px);
+            left: 10px;
+            background: repeating-linear-gradient(45deg, #ff9500, #ff9500 10px, #ff6f00 10px, #ff6f00 20px);
         }
         .average-bar-right {
-            right: 0;
-            border-right: none;
-            background: repeating-linear-gradient(45deg, transparent, transparent 10px, #ff6f00 10px, #ff6f00 20px);
+            right: 10px;
+            background: repeating-linear-gradient(45deg, #ff9500, #ff9500 10px, #ff6f00 10px, #ff6f00 20px);
         }
         .dotted-line {
             position: absolute;
-            height: 2px;
-            background: repeating-linear-gradient(90deg, transparent, transparent 5px, #ddd 5px, #ddd 10px);
-            top: 50%;
-            left: 20px;
-            right: 20px;
+            top: 0;
+            left: 60px;
+            right: 60px;
+            height: 30px;
+            border-top: 2px dotted #ff9500;
+            z-index: 1;
         }
         .arrow {
-            font-size: 30px;
+            font-size: 60px;
             color: #007aff;
-            margin: 10px 0;
-            position: relative;
-            height: 0;
-        }
-        .arrow::before {
-            content: '↓';
-            font-size: 30px;
             position: absolute;
+            bottom: -60px;
             left: 50%;
             transform: translateX(-50%);
         }
-        .data-points {
+        .shaded-bars {
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: flex-end;
             width: 100%;
+            height: 30px;
+            margin-top: 10px;
         }
-        .data-point {
-            width: 20px;
+        .shaded-bar {
+            width: 40px;
             height: 30px;
             background-color: #ff9500;
+            margin-right: 2px;
             border-radius: 4px;
-            margin: 0 2px;
         }
         .nav-button {
             background-color: #34c759;
@@ -176,7 +169,7 @@
             const average = parseFloat(averageInput.value);
 
             if (!isNaN(total) && !isNaN(average) && average > 0) {
-                const numDataPoints = Math.floor(total / average);
+                const numDataPoints = Math.round(total / average);
                 updateDisplay(total, average, numDataPoints);
             }
         }
@@ -187,7 +180,7 @@
             chart.innerHTML = '';
 
             // Update calculation display
-            calculationDisplay.textContent = `Number of Data Points = Total ÷ Average = ${total.toFixed(2)} ÷ ${average.toFixed(2)} = ${numDataPoints}`;
+            calculationDisplay.textContent = `Number of Data Points = Total ÷ Average = ${total.toFixed(2)} ÷ ${average.toFixed(2)} = ${Math.round(total / average)}`;
 
             // Create total bar
             const totalBar = document.createElement('div');
@@ -216,17 +209,18 @@
             // Create downward arrow
             const arrow = document.createElement('div');
             arrow.className = 'arrow';
+            arrow.textContent = '↓';
             chart.appendChild(arrow);
 
-            // Create shaded bars for data points
-            const dataPointsContainer = document.createElement('div');
-            dataPointsContainer.className = 'data-points';
-            chart.appendChild(dataPointsContainer);
+            // Create shaded bars
+            const shadedBarsContainer = document.createElement('div');
+            shadedBarsContainer.className = 'shaded-bars';
+            chart.appendChild(shadedBarsContainer);
 
             for (let i = 0; i < numDataPoints; i++) {
-                const dataPoint = document.createElement('div');
-                dataPoint.className = 'data-point';
-                dataPointsContainer.appendChild(dataPoint);
+                const shadedBar = document.createElement('div');
+                shadedBar.className = 'shaded-bar';
+                shadedBarsContainer.appendChild(shadedBar);
             }
         }
 
@@ -243,7 +237,6 @@
                 document.getElementById('averageInput').focus();
             }
         });
-
         document.getElementById('averageInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 calculateDataPoints();
