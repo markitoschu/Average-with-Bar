@@ -89,14 +89,6 @@
             height: 30px;
             border-radius: 4px;
         }
-        .average-bar-left {
-            left: 0;
-            background: repeating-linear-gradient(45deg, #ff9500, #ff9500 10px, #ff6f00 10px, #ff6f00 20px);
-        }
-        .average-bar-right {
-            right: 0;
-            background: repeating-linear-gradient(45deg, #ff9500, #ff9500 10px, #ff6f00 10px, #ff6f00 20px);
-        }
         .space {
             width: 100%;
             height: 30px;
@@ -128,7 +120,7 @@
         }
         .nav-button.secondary {
             background-color: #007aff;
-            right: 130px;
+            top: 70px; /* Adjust to stack vertically */
         }
     </style>
 </head>
@@ -154,7 +146,7 @@
             const average = parseFloat(averageInput.value);
 
             if (!isNaN(total) && !isNaN(average) && average > 0) {
-                const numDataPoints = Math.round(total / average);
+                const numDataPoints = Math.floor(total / average); // Use floor to fit more accurately
                 updateDisplay(total, average, numDataPoints);
             }
         }
@@ -165,7 +157,7 @@
             chart.innerHTML = '';
 
             // Update calculation display
-            calculationDisplay.textContent = `Number of Data Points = Total ÷ Average = ${total.toFixed(2)} ÷ ${average.toFixed(2)} = ${Math.round(total / average)}`;
+            calculationDisplay.textContent = `Number of Data Points = Total ÷ Average = ${total.toFixed(2)} ÷ ${average.toFixed(2)} = ${numDataPoints}`;
 
             // Create total bar
             const totalBar = document.createElement('div');
@@ -178,13 +170,24 @@
             chart.appendChild(totalBarValue);
 
             // Create average bars
-            const averageBarLeft = document.createElement('div');
-            averageBarLeft.className = 'average-bar average-bar-left';
-            chart.appendChild(averageBarLeft);
+            const averageBarWidth = 20;
+            const spaceWidth = 2;
+            const totalBarWidth = chart.offsetWidth;
+            const totalBarsWidth = numDataPoints * (averageBarWidth + spaceWidth) - spaceWidth;
+            const numFullBars = Math.floor(totalBarWidth / (averageBarWidth + spaceWidth));
 
-            const averageBarRight = document.createElement('div');
-            averageBarRight.className = 'average-bar average-bar-right';
-            chart.appendChild(averageBarRight);
+            // Create shaded bars
+            for (let i = 0; i < numFullBars; i++) {
+                const shadedBar = document.createElement('div');
+                shadedBar.className = 'average-bar';
+                shadedBar.style.backgroundColor = '#ff9500';
+                shadedBar.style.height = '30px';
+                shadedBar.style.width = `${averageBarWidth}px`;
+                shadedBar.style.marginRight = `${spaceWidth}px`;
+                shadedBar.style.position = 'absolute';
+                shadedBar.style.left = `${i * (averageBarWidth + spaceWidth)}px`;
+                chart.appendChild(shadedBar);
+            }
 
             // Create space
             const space = document.createElement('div');
@@ -196,17 +199,6 @@
             arrow.className = 'arrow';
             arrow.textContent = '↓';
             chart.appendChild(arrow);
-
-            // Create shaded bars
-            for (let i = 0; i < numDataPoints; i++) {
-                const shadedBar = document.createElement('div');
-                shadedBar.className = 'average-bar';
-                shadedBar.style.backgroundColor = '#ff9500';
-                shadedBar.style.height = '30px';
-                shadedBar.style.width = '20px';
-                shadedBar.style.marginRight = '2px';
-                chart.appendChild(shadedBar);
-            }
         }
 
         function resetCalculator() {
