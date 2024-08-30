@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,22 +18,26 @@
             min-height: 100vh;
             flex-direction: column;
         }
+
         h1 {
             color: #1d1d1f;
             font-size: 24px;
             margin-bottom: 20px;
         }
+
         .input-container {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             margin-bottom: 10px;
         }
+
         label {
             font-size: 14px;
             margin-bottom: 5px;
             color: #666;
         }
+
         input {
             font-size: 16px;
             padding: 10px;
@@ -42,11 +47,13 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             width: 200px;
         }
+
         .input-hint {
             font-size: 12px;
             color: #666;
             margin-top: -5px;
         }
+
         button {
             font-size: 16px;
             padding: 10px;
@@ -57,14 +64,17 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             font-weight: bold;
         }
+
         button.calculate-button {
             background-color: #007aff;
             color: white;
         }
+
         button.reset-button {
             background-color: #ff3b30;
             color: white;
         }
+
         button.back-button {
             background-color: #34c759;
             color: white;
@@ -72,12 +82,14 @@
             top: 20px;
             right: 20px;
         }
+
         .info {
             font-size: 16px;
             color: #666;
             margin-bottom: 10px;
             font-weight: bold;
         }
+
         #chart {
             display: flex;
             flex-direction: row;
@@ -89,6 +101,7 @@
             position: relative;
             overflow: hidden;
         }
+
         .bar {
             height: 100%;
             display: flex;
@@ -98,6 +111,7 @@
             font-weight: bold;
             font-size: 14px;
         }
+
         .logo {
             position: absolute;
             top: 20px;
@@ -107,8 +121,9 @@
         }
     </style>
 </head>
+
 <body>
-    <button class="back-button" onclick="window.location.href='index.html'">Back to Average Calculator</button>
+    <button class="back-button" onclick="window.location.href='index.html'">Find Average with Total & No. of Data</button>
     <h1>Find Total Calculator</h1>
     <div style="display: flex; align-items: flex-start;">
         <div class="input-container">
@@ -117,8 +132,8 @@
         </div>
         <div class="input-container">
             <label for="dataPointsInput">Number of Data Points:</label>
-            <input type="number" id="dataPointsInput" placeholder="Enter number of data points">
-            <div class="input-hint">(Max: 50)</div>
+            <input type="number" id="dataPointsInput" step="0.01" max="50" placeholder="Enter number of data points">
+            <div class="input-hint">(Max: 50, up to 2 decimal places)</div>
         </div>
     </div>
     <div>
@@ -143,7 +158,7 @@
 
         function calculateTotal() {
             average = parseFloat(document.getElementById('averageInput').value);
-            dataPoints = parseInt(document.getElementById('dataPointsInput').value);
+            dataPoints = parseFloat(document.getElementById('dataPointsInput').value);
 
             if (isNaN(average) || isNaN(dataPoints) || dataPoints <= 0 || dataPoints > maxDataPoints) {
                 alert(`Please enter valid numbers for average and data points (max ${maxDataPoints}).`);
@@ -159,20 +174,31 @@
             const chart = document.getElementById('chart');
             const totalDisplay = document.getElementById('totalDisplay');
 
-            totalEquation.textContent = `Total = Average × Number of Data Points = ${average.toFixed(2)} × ${dataPoints} = ${total.toFixed(2)}`;
+            totalEquation.textContent = `Total = Average × Number of Data Points = ${average.toFixed(2)} × ${dataPoints.toFixed(2)} = ${total.toFixed(2)}`;
 
             chart.innerHTML = '';
             const colors = ['#007aff', '#34c759', '#ff9500', '#ff3b30', '#5856d6'];
             const barWidth = calculateBarWidth(average);
             const totalWidth = barWidth * dataPoints;
 
-            for (let i = 0; i < dataPoints; i++) {
+            for (let i = 0; i < Math.floor(dataPoints); i++) {
                 const bar = document.createElement('div');
                 bar.className = 'bar';
                 bar.style.width = `${barWidth}px`;
                 bar.style.backgroundColor = colors[i % colors.length];
                 bar.textContent = average.toFixed(2);
                 chart.appendChild(bar);
+            }
+
+            // Add a fractional bar if needed
+            const fractionalPart = dataPoints % 1;
+            if (fractionalPart > 0) {
+                const fractionalBar = document.createElement('div');
+                fractionalBar.className = 'bar';
+                fractionalBar.style.width = `${barWidth * fractionalPart}px`;
+                fractionalBar.style.backgroundColor = colors[Math.floor(dataPoints) % colors.length];
+                fractionalBar.textContent = average.toFixed(2);
+                chart.appendChild(fractionalBar);
             }
 
             chart.style.width = `${totalWidth}px`;
@@ -207,18 +233,19 @@
         }
 
         // Add event listeners for Enter key
-        document.getElementById('averageInput').addEventListener('keypress', function(event) {
+        document.getElementById('averageInput').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
                 updateAverageBar();
                 document.getElementById('dataPointsInput').focus();
             }
         });
 
-        document.getElementById('dataPointsInput').addEventListener('keypress', function(event) {
+        document.getElementById('dataPointsInput').addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
                 calculateTotal();
             }
         });
     </script>
 </body>
+
 </html>
