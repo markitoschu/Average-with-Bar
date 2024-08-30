@@ -14,19 +14,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 90vh;
             flex-direction: column;
             position: relative;
         }
         h1 {
             color: #1d1d1f;
             font-size: 24px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         input {
             font-size: 16px;
             padding: 10px;
-            margin: 10px 5px 10px 0;
+            margin: 5px 5px 5px 0;
             border-radius: 8px;
             border: 1px solid #d1d1d6;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -35,7 +35,7 @@
         button {
             font-size: 16px;
             padding: 10px;
-            margin: 10px 5px;
+            margin: 5px 5px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
@@ -61,7 +61,7 @@
             flex-direction: column;
             align-items: center;
             width: 400px; /* Fixed width */
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .total-bar {
             width: 100%;
@@ -71,12 +71,13 @@
         }
         .total-bar-value {
             position: absolute;
-            top: 35px;
+            top: 5px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
             font-size: 16px;
-            color: #007aff;
+            color: white;
+            font-weight: bold;
         }
         .orange-bar {
             width: 100%;
@@ -94,6 +95,7 @@
             justify-content: center;
             color: white;
             font-size: 14px;
+            position: relative;
         }
         .nav-buttons {
             position: absolute;
@@ -127,8 +129,8 @@
     </div>
     
     <div style="display: flex; align-items: center;">
-        <input type="number" id="totalInput" placeholder="Enter Total">
-        <input type="number" id="averageInput" placeholder="Enter Average">
+        <input type="number" id="totalInput" placeholder="Enter Total" step="0.01">
+        <input type="number" id="averageInput" placeholder="Enter Average" step="0.01">
         <button class="calculate-button" onclick="calculateDataPoints()">Calculate</button>
         <button class="reset-button" onclick="resetCalculator()">Reset</button>
     </div>
@@ -143,7 +145,7 @@
             const average = parseFloat(averageInput.value);
 
             if (!isNaN(total) && !isNaN(average) && average > 0) {
-                const numDataPoints = Math.round(total / average);
+                const numDataPoints = total / average;
                 updateDisplay(total, average, numDataPoints);
             }
         }
@@ -154,7 +156,7 @@
             chart.innerHTML = '';
 
             // Update calculation display
-            calculationDisplay.textContent = `Number of Data Points = Total ÷ Average = ${total.toFixed(2)} ÷ ${average.toFixed(2)} = ${Math.round(total / average)}`;
+            calculationDisplay.textContent = `Number of Data Points = Total ÷ Average = ${total.toFixed(2)} ÷ ${average.toFixed(2)} = ${numDataPoints.toFixed(2)}`;
 
             // Create total bar
             const totalBar = document.createElement('div');
@@ -164,21 +166,31 @@
             const totalBarValue = document.createElement('div');
             totalBarValue.className = 'total-bar-value';
             totalBarValue.textContent = total.toFixed(2);
-            chart.appendChild(totalBarValue);
+            totalBar.appendChild(totalBarValue);
 
             // Create orange bar with segments
             const orangeBar = document.createElement('div');
             orangeBar.className = 'orange-bar';
             chart.appendChild(orangeBar);
 
-            const segmentWidth = 100 / (total / average);
+            const segmentWidth = 100 / numDataPoints;
 
-            for (let i = 0; i < total / average; i++) {
+            for (let i = 0; i < Math.floor(numDataPoints); i++) {
                 const segment = document.createElement('div');
                 segment.className = 'orange-bar-segment';
                 segment.style.width = `${segmentWidth}%`;
                 segment.textContent = average.toFixed(2);
                 orangeBar.appendChild(segment);
+            }
+
+            // Add half segment if necessary
+            const remainingSegment = numDataPoints - Math.floor(numDataPoints);
+            if (remainingSegment > 0) {
+                const halfSegment = document.createElement('div');
+                halfSegment.className = 'orange-bar-segment';
+                halfSegment.style.width = `${segmentWidth * remainingSegment}%`;
+                halfSegment.textContent = average.toFixed(2);
+                orangeBar.appendChild(halfSegment);
             }
         }
 
