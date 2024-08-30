@@ -60,13 +60,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: auto;
             width: 400px; /* Fixed width */
             margin-top: 20px;
-            position: relative;
         }
         .total-bar {
-            width: 100%; /* Fixed width */
+            width: 100%;
             height: 30px;
             background-color: #007aff;
             position: relative;
@@ -80,23 +78,22 @@
             font-size: 16px;
             color: #007aff;
         }
-        .average-bar {
-            width: 100%; /* Fixed width */
+        .orange-bar {
+            width: 100%;
             height: 30px;
             background-color: #ff9500;
-            position: relative;
             display: flex;
+            position: relative;
+            margin-top: 10px;
         }
-        .average-section {
+        .orange-bar-segment {
             height: 30px;
-            border-left: 1px solid #ff9500;
+            border-left: 1px solid #e5e5e5;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .average-value {
-            font-size: 16px;
-            color: #fff;
+            color: white;
+            font-size: 14px;
         }
         .nav-buttons {
             position: absolute;
@@ -146,12 +143,12 @@
             const average = parseFloat(averageInput.value);
 
             if (!isNaN(total) && !isNaN(average) && average > 0) {
-                const numSections = Math.ceil(total / average);
-                updateDisplay(total, average, numSections);
+                const numDataPoints = Math.round(total / average);
+                updateDisplay(total, average, numDataPoints);
             }
         }
 
-        function updateDisplay(total, average, numSections) {
+        function updateDisplay(total, average, numDataPoints) {
             const calculationDisplay = document.getElementById('calculationDisplay');
             const chart = document.getElementById('chart');
             chart.innerHTML = '';
@@ -169,21 +166,19 @@
             totalBarValue.textContent = total.toFixed(2);
             chart.appendChild(totalBarValue);
 
-            // Create average bar
-            const averageBar = document.createElement('div');
-            averageBar.className = 'average-bar';
-            chart.appendChild(averageBar);
+            // Create orange bar with segments
+            const orangeBar = document.createElement('div');
+            orangeBar.className = 'orange-bar';
+            chart.appendChild(orangeBar);
 
-            // Calculate width of each section
-            const sectionWidth = 100 / numSections;
+            const segmentWidth = 100 / (total / average);
 
-            // Create sections
-            for (let i = 0; i < numSections; i++) {
-                const averageSection = document.createElement('div');
-                averageSection.className = 'average-section';
-                averageSection.style.width = `${sectionWidth}%`;
-                averageSection.innerHTML = `<span class="average-value">${average.toFixed(2)}</span>`;
-                averageBar.appendChild(averageSection);
+            for (let i = 0; i < total / average; i++) {
+                const segment = document.createElement('div');
+                segment.className = 'orange-bar-segment';
+                segment.style.width = `${segmentWidth}%`;
+                segment.textContent = average.toFixed(2);
+                orangeBar.appendChild(segment);
             }
         }
 
