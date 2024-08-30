@@ -82,50 +82,56 @@
             color: #007aff;
         }
         .average-bar {
-            width: 40px;
             height: 30px;
-            border-radius: 4px;
+            border: 2px dotted #ff9500;
             position: absolute;
         }
         .average-bar-left {
             left: 10px;
-            background: repeating-linear-gradient(45deg, #ff9500, #ff9500 10px, #ff6f00 10px, #ff6f00 20px);
         }
         .average-bar-right {
             right: 10px;
-            background: repeating-linear-gradient(45deg, #ff9500, #ff9500 10px, #ff6f00 10px, #ff6f00 20px);
         }
         .dotted-line {
             position: absolute;
             top: 0;
-            left: 60px;
-            right: 60px;
+            left: 50px; /* Adjust for border of the average bars */
+            right: 50px; /* Adjust for border of the average bars */
             height: 30px;
             border-top: 2px dotted #ff9500;
             z-index: 1;
         }
         .arrow {
-            font-size: 60px;
+            font-size: 50px; /* Adjust size */
             color: #007aff;
             position: absolute;
-            bottom: -60px;
+            bottom: -50px; /* Adjust to be immediately under */
             left: 50%;
             transform: translateX(-50%);
+            width: 100px; /* Adjust for 25% width */
+            text-align: center;
         }
         .shaded-bars {
             display: flex;
             justify-content: center;
             align-items: flex-end;
             width: 100%;
+            max-width: 400px; /* Same width as total bar */
             height: 30px;
             margin-top: 10px;
         }
         .shaded-bar {
-            width: 40px;
             height: 30px;
             background-color: #ff9500;
+            border: 2px dotted #ff9500; /* Same border as average bars */
             margin-right: 2px;
-            border-radius: 4px;
+        }
+        .nav-buttons {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
         .nav-button {
             background-color: #34c759;
@@ -137,20 +143,19 @@
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             font-weight: bold;
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            margin-bottom: 10px;
         }
         .nav-button.secondary {
             background-color: #007aff;
-            right: 130px;
         }
     </style>
 </head>
 <body>
     <h1>Find Number of Data Points</h1>
-    <button class="nav-button" onclick="window.location.href='find_total.html'">Find Total with Average & No. of Data</button>
-    <button class="nav-button secondary" onclick="window.location.href='index.html'">Find Average with Total & No. of Data</button>
+    <div class="nav-buttons">
+        <button class="nav-button secondary" onclick="window.location.href='index.html'">Find Average with Total & No. of Data</button>
+        <button class="nav-button" onclick="window.location.href='find_total.html'">Find Total with Average & No. of Data</button>
+    </div>
     
     <div style="display: flex; align-items: center;">
         <input type="number" id="totalInput" placeholder="Enter Total">
@@ -192,24 +197,32 @@
             totalBarValue.textContent = total.toFixed(2);
             chart.appendChild(totalBarValue);
 
+            // Calculate bar size
+            const averageBarWidth = (total / 10); // Example proportional size
+
             // Create average bars
             const averageBarLeft = document.createElement('div');
             averageBarLeft.className = 'average-bar average-bar-left';
+            averageBarLeft.style.width = `${averageBarWidth}px`;
             chart.appendChild(averageBarLeft);
 
             const averageBarRight = document.createElement('div');
             averageBarRight.className = 'average-bar average-bar-right';
+            averageBarRight.style.width = `${averageBarWidth}px`;
             chart.appendChild(averageBarRight);
 
             // Create dotted line
             const dottedLine = document.createElement('div');
             dottedLine.className = 'dotted-line';
+            dottedLine.style.left = `${averageBarWidth + 10}px`; // Adjust for border of the average bars
+            dottedLine.style.right = `${averageBarWidth + 10}px`; // Adjust for border of the average bars
             chart.appendChild(dottedLine);
 
             // Create downward arrow
             const arrow = document.createElement('div');
             arrow.className = 'arrow';
             arrow.textContent = '↓';
+            arrow.style.width = `${0.25 * totalBar.clientWidth}px`; // 25% of the width of the total bar
             chart.appendChild(arrow);
 
             // Create shaded bars
@@ -220,6 +233,7 @@
             for (let i = 0; i < numDataPoints; i++) {
                 const shadedBar = document.createElement('div');
                 shadedBar.className = 'shaded-bar';
+                shadedBar.style.width = `${averageBarWidth}px`;
                 shadedBarsContainer.appendChild(shadedBar);
             }
         }
@@ -232,13 +246,14 @@
         }
 
         // Add event listeners for Enter key press
-        document.getElementById('totalInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('averageInput').focus();
+        document.getElementById('totalInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculateDataPoints();
             }
         });
-        document.getElementById('averageInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+
+        document.getElementById('averageInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
                 calculateDataPoints();
             }
         });
