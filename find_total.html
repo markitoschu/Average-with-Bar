@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Total - Average Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        input, button { font-size: 16px; padding: 5px; margin: 5px; }
+        #chart { display: flex; align-items: flex-end; height: 200px; margin-top: 20px; border-bottom: 1px solid black; }
+        .bar { width: 30px; margin-right: 5px; background-color: orange; position: relative; }
+        .bar-label { text-align: center; margin-top: 5px; font-size: 12px; }
+        .info { margin-top: 20px; font-size: 18px; font-weight: bold; }
+        .buttons { margin-top: 20px; }
+        .calculate-btn { background-color: #007BFF; color: white; border: none; padding: 10px 15px; cursor: pointer; }
+        .reset-btn { background-color: red; color: white; border: none; padding: 10px 15px; cursor: pointer; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Find Total from Average and Number of Data</h1>
+  <!-- Navigation button back to the first page -->
+    <button onclick="window.location.href='index.html'">Find Average</button>
+    <div>
+        <input type="number" id="averageInput" placeholder="Enter average">
+        <input type="number" id="numberOfDataInput" placeholder="Enter number of data">
+    </div>
+    <div class="buttons">
+        <button class="calculate-btn" onclick="calculateTotal()">Calculate</button>
+        <button class="reset-btn" onclick="resetCalculator()">Reset</button>
+    </div>
+    <div id="totalDisplay" class="info"></div>
+    <div id="equationDisplay" class="info"></div>
+    <div id="chart"></div>
+
+    <script>
+        let average = 0;
+        let numberOfData = 0;
+
+        function calculateTotal() {
+            const averageInput = document.getElementById('averageInput').value;
+            const numberOfDataInput = document.getElementById('numberOfDataInput').value;
+            average = parseFloat(averageInput);
+            numberOfData = parseInt(numberOfDataInput);
+
+            if (!isNaN(average) && !isNaN(numberOfData)) {
+                const total = average * numberOfData;
+                updateDisplay(total);
+            }
+        }
+
+        function updateDisplay(total) {
+            const totalDisplay = document.getElementById('totalDisplay');
+            const equationDisplay = document.getElementById('equationDisplay');
+            const chart = document.getElementById('chart');
+
+            totalDisplay.textContent = `Total: ${total.toFixed(2)}`;
+            equationDisplay.textContent = `Total = ${average.toFixed(2)} × ${numberOfData} = ${total.toFixed(2)}`;
+
+            chart.innerHTML = '';
+
+            for (let i = 0; i < numberOfData; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = '100px';  // Fixed height for consistent bar size
+                const label = document.createElement('div');
+                label.className = 'bar-label';
+                label.textContent = average.toFixed(2);
+                bar.appendChild(label);
+                chart.appendChild(bar);
+            }
+        }
+
+        function resetCalculator() {
+            document.getElementById('averageInput').value = '';
+            document.getElementById('numberOfDataInput').value = '';
+            document.getElementById('totalDisplay').textContent = '';
+            document.getElementById('equationDisplay').textContent = '';
+            document.getElementById('chart').innerHTML = '';
+            average = 0;
+            numberOfData = 0;
+        }
+    </script>
+</body>
+</html>
